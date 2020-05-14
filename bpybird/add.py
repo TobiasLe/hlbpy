@@ -67,12 +67,15 @@ def cuboid(collection, shape=(1, 1, 1), name="cuboid"):
     return obj
 
 
-def uv_sphere(collection, u_segments=32, v_segments=16, diameter=1, name="uv_sphere"):
+def uv_sphere(collection, u_segments=32, v_segments=16, radius=1, name="uv_sphere", smooth=True):
     mesh = bpy.data.meshes.new(name)
     obj = bpy.data.objects.new(name, mesh)
     collection.objects.link(obj)
     bm = bmesh.new()
-    bmesh.ops.create_uvsphere(bm, u_segments=u_segments, v_segments=v_segments, diameter=diameter)
+    bmesh.ops.create_uvsphere(bm, u_segments=u_segments, v_segments=v_segments, diameter=radius)
+    if smooth:
+        for f in bm.faces:
+            f.smooth = True
     bm.to_mesh(mesh)
     bm.free()
     return obj
