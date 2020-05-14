@@ -35,7 +35,7 @@ def arrow(collection, length, width, head_length, head_width, thickness, zero_pa
     return obj
 
 
-def collection(name, activate=True, clear=False):
+def collection(name, activate=False, clear=False):
     if name not in [c.name for c in bpy.data.collections]:
         coll = bpy.data.collections.new(name)
         bpy.context.scene.collection.children.link(coll)
