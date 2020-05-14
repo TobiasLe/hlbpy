@@ -6,6 +6,10 @@ def activate():
     bpy.context.scene.rigidbody_world.collection = bpy.data.collections.new("RigidBodyWorld")
 
 
+def add(object):
+    bpy.context.scene.rigidbody_world.collection.objects.link(object)
+
+
 def pop_up(obj, location, frame):
     """
     Move object to location and activate rigid body sim at the same time.
