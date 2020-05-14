@@ -2,7 +2,7 @@ import bpy
 import bmesh
 
 
-def arrow(length, width, head_length, head_width, thickness, collection, zero_pad=False):
+def arrow(collection, length, width, head_length, head_width, thickness, zero_pad=False):
     verts = [[0, 0.5 * width, 0],
              [length - head_length, 0.5 * width, 0],
              [length - head_length, 0.5 * head_width, 0],
@@ -78,7 +78,7 @@ def uv_sphere(collection, u_segments=32, v_segments=16, diameter=1, name="uv_sph
     return obj
 
 
-def text(content, collection, name="text"):
+def text(collection, content, name="text"):
     curve = bpy.data.curves.new(type="FONT", name="text_curve")
     obj = bpy.data.objects.new(name, curve)
     obj.data.body = content
