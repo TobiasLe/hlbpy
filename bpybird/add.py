@@ -52,7 +52,7 @@ def collection(name, activate=True, clear=False):
     return coll
 
 
-def cuboid(name, collection, shape=(1, 1, 1)):
+def cuboid(collection, shape=(1, 1, 1), name="cuboid"):
     mesh = bpy.data.meshes.new(name)
     obj = bpy.data.objects.new(name, mesh)
     collection.objects.link(obj)
@@ -64,6 +64,17 @@ def cuboid(name, collection, shape=(1, 1, 1)):
         for i in range(3):
             vertex.co[i] *= shape[i]
 
+    return obj
+
+
+def uv_sphere(collection, u_segments=32, v_segments=16, diameter=1, name="uv_sphere"):
+    mesh = bpy.data.meshes.new(name)
+    obj = bpy.data.objects.new(name, mesh)
+    collection.objects.link(obj)
+    bm = bmesh.new()
+    bmesh.ops.create_uvsphere(bm, u_segments=u_segments, v_segments=v_segments, diameter=diameter)
+    bm.to_mesh(mesh)
+    bm.free()
     return obj
 
 
