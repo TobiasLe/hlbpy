@@ -89,3 +89,17 @@ def text(collection, content, name="text"):
     return obj
 
 
+def duplicate(collection, obj, linked=False):
+    new_obj = obj.copy()
+    collection.objects.link(new_obj)
+    if not linked:
+        new_obj.data = obj.data.copy()
+    return new_obj
+
+
+def multiple(collection, obj, n, linked=False):
+    objects = [obj]
+    for i in range(1, n):
+        objects.append(duplicate(collection, obj, linked))
+    return objects
+

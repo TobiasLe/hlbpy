@@ -4,6 +4,7 @@ import bpy
 def activate():
     bpy.ops.rigidbody.world_add()
     bpy.context.scene.rigidbody_world.collection = bpy.data.collections.new("RigidBodyWorld")
+    return bpy.context.scene.rigidbody_world
 
 
 def add(object):
