@@ -36,6 +36,16 @@ def pop_up(obj, location, frame):
 
 
 def get_trajectory(objects, start_frame, end_frame, scene=None):
+    """
+    Args:
+        objects:
+        start_frame:
+        end_frame:
+        scene:
+
+    Returns: trajectory as numpy array with shape (n_frames, n_objects, xyz)
+
+    """
     if scene is None:
         scene = objects[0].users_scene[0]
     n_frames = end_frame - start_frame
