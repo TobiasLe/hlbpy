@@ -1,4 +1,5 @@
 import bpy
+import numpy as np
 
 
 def activate():
@@ -32,3 +33,17 @@ def pop_up(obj, location, frame):
     obj.keyframe_insert(data_path="rigid_body.kinematic", frame=frame)
     obj.rigid_body.kinematic = False
     obj.keyframe_insert(data_path="rigid_body.kinematic", frame=frame + 1)
+
+
+def get_trajectory(objects, start_frame, end_frame, scene=None):
+    if scene is None:
+        scene = objects[0].users_scene[0]
+    n_frames = end_frame - start_frame
+    trajectory = np.zeros((n_frames, len(objects), 3))
+
+    for i in range(n_frames):
+        scene.frame_set(i)
+        for j in range(len(objects)):
+            trajectory[i, j] = objects[j].matrix_world.translation
+
+    return trajectory
