@@ -81,6 +81,26 @@ def uv_sphere(collection, u_segments=32, v_segments=16, radius=1, name="uv_spher
     return obj
 
 
+def speaker(collection, name="speaker", sound_file=None, frame=0):
+    # speak = bpy.data.speakers.new(name)
+    # if sound_file is not None:
+    #     speak.sound = bpy.data.sounds.load(str(sound_file))
+    # obj = bpy.data.objects.new(name, speak)
+    # collection.objects.link(obj)
+    # # the above approach doesn't add nla sound track and I dont know how to.
+
+    previous_frame_num = bpy.context.scene.frame_current
+    bpy.context.scene.frame_set(frame)
+    bpy.ops.object.speaker_add()
+    obj = bpy.context.object
+    obj.data.sound = bpy.data.sounds.load(str(sound_file), check_existing=True)
+    # bpy.ops.sound.open_mono(filepath=str(sound_file))
+    collection.objects.link(obj)
+
+    bpy.context.scene.frame_set(previous_frame_num)
+    return obj
+
+
 def text(collection, content, name="text"):
     curve = bpy.data.curves.new(type="FONT", name="text_curve")
     obj = bpy.data.objects.new(name, curve)
