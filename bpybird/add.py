@@ -1,5 +1,6 @@
 import bpy
 import bmesh
+import os
 
 
 def arrow(collection, length, width, head_length, head_width, thickness, zero_pad=False):
@@ -93,8 +94,11 @@ def speaker(collection, name="speaker", sound_file=None, frame=0):
     bpy.context.scene.frame_set(frame)
     bpy.ops.object.speaker_add()
     obj = bpy.context.object
-    obj.data.sound = bpy.data.sounds.load(str(sound_file), check_existing=True)
+    obj.data.sound = bpy.data.sounds.load(str(sound_file))
+    obj.data.update_tag()  # I don't know what this does but somehow the sound is not playing without it.
     # bpy.ops.sound.open_mono(filepath=str(sound_file))
+    # obj.data.sound = bpy.data.sounds[os.path.basename(sound_file)]
+    bpy.context.collection.objects.unlink(obj)
     collection.objects.link(obj)
 
     bpy.context.scene.frame_set(previous_frame_num)
