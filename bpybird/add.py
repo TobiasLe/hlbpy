@@ -1,6 +1,7 @@
 import bpy
 import bmesh
 import os
+from mathutils import Vector
 
 
 def arrow(collection, length, width, head_length, head_width, thickness, zero_pad=False):
@@ -53,7 +54,7 @@ def collection(name, activate=False, clear=False):
     return coll
 
 
-def cuboid(collection, shape=(1, 1, 1), name="cuboid"):
+def cuboid(collection, shape=(1, 1, 1), limits=None, name="cuboid"):
     mesh = bpy.data.meshes.new(name)
     obj = bpy.data.objects.new(name, mesh)
     collection.objects.link(obj)
@@ -61,9 +62,17 @@ def cuboid(collection, shape=(1, 1, 1), name="cuboid"):
     bmesh.ops.create_cube(bm, size=1.0)
     bm.to_mesh(mesh)
     bm.free()
+    if limits is not None:
+        shape = tuple(lim[1]-lim[0] for lim in limits)
     for vertex in obj.data.vertices:
         for i in range(3):
             vertex.co[i] *= shape[i]
+    if limits is not None:
+        # shift origin to corner
+        for vertex in obj.data.vertices:
+            for i in range(3):
+                vertex.co[i] += shape[i] * 0.5
+        obj.location = tuple(lim[0] for lim in limits)
 
     return obj
 
