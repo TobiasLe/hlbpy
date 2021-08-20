@@ -7,14 +7,14 @@ with open("description.md", "r") as fh:
 version_file = open('VERSION')
 version = version_file.read().strip()
 
-setup(name='bpybird',
+setup(name='hlbpy',
       version=version,
       description='high level blender stuff',
       long_description=long_description,
       long_description_content_type="text/markdown",
       author='Tobias Lemke',
       url="",
-      packages=['bpybird'],
+      packages=['hlbpy'],
       install_requires=[],
       classifiers=[])
 

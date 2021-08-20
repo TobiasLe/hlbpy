@@ -54,6 +54,12 @@ def collection(name, activate=False, clear=False):
     return coll
 
 
+def empty(collection, name="empty"):
+    obj = bpy.data.objects.new(name, None)
+    collection.objects.link(obj)
+    return obj
+
+
 def cuboid(collection, shape=(1, 1, 1), limits=None, name="cuboid"):
     mesh = bpy.data.meshes.new(name)
     obj = bpy.data.objects.new(name, mesh)
@@ -77,7 +83,7 @@ def cuboid(collection, shape=(1, 1, 1), limits=None, name="cuboid"):
     return obj
 
 
-def uv_sphere(collection, u_segments=32, v_segments=16, radius=1, name="uv_sphere", smooth=True):
+def uv_sphere(collection, u_segments=32, v_segments=16, radius=0.5, name="uv_sphere", smooth=True):
     mesh = bpy.data.meshes.new(name)
     obj = bpy.data.objects.new(name, mesh)
     collection.objects.link(obj)
