@@ -83,7 +83,8 @@ def cuboid(collection, shape=(1, 1, 1), limits=None, name="cuboid"):
     return obj
 
 
-def uv_sphere(collection, u_segments=32, v_segments=16, radius=0.5, name="uv_sphere", smooth=True):
+def uv_sphere(collection, u_segments=32, v_segments=16, radius=0.5, name="uv_sphere", smooth=True, location=None,
+              parent=None):
     mesh = bpy.data.meshes.new(name)
     obj = bpy.data.objects.new(name, mesh)
     collection.objects.link(obj)
@@ -94,6 +95,10 @@ def uv_sphere(collection, u_segments=32, v_segments=16, radius=0.5, name="uv_sph
             f.smooth = True
     bm.to_mesh(mesh)
     bm.free()
+    if location is not None:
+        obj.location = location
+    if parent is not None:
+        obj.parent = parent
     return obj
 
 
