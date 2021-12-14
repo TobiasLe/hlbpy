@@ -89,7 +89,7 @@ def uv_sphere(collection, u_segments=32, v_segments=16, radius=0.5, name="uv_sph
     obj = bpy.data.objects.new(name, mesh)
     collection.objects.link(obj)
     bm = bmesh.new()
-    bmesh.ops.create_uvsphere(bm, u_segments=u_segments, v_segments=v_segments, diameter=radius)
+    bmesh.ops.create_uvsphere(bm, u_segments=u_segments, v_segments=v_segments, radius=radius)
     if smooth:
         for f in bm.faces:
             f.smooth = True
