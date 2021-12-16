@@ -46,7 +46,7 @@ def SVGCreateCurve(context):
     cu = bpy.data.curves.new("Curve", 'CURVE')
     obj = bpy.data.objects.new("Curve", cu)
 
-    context['collection'].objects.link(obj)
+    context['objects'].append(obj)
 
     return obj
 
@@ -1815,10 +1815,8 @@ class SVGLoader(SVGGeometryContainer):
         """
         import os
 
-        svg_name = os.path.basename(filepath)
-        scene = context.scene
-        collection = bpy.data.collections.new(name=svg_name)
-        scene.collection.children.link(collection)
+        self.objects = []
+
 
         node = xml.dom.minidom.parse(filepath)
 
@@ -1837,7 +1835,7 @@ class SVGLoader(SVGGeometryContainer):
                          'styles': [None],
                          'style': None,
                          'do_colormanage': do_colormanage,
-                         'collection': collection}
+                         'objects': self.objects}
 
         super().__init__(node, self._context)
 

@@ -11,11 +11,15 @@ except ConnectionRefusedError:
 
 scene = hlbpy.Scene("TestScene")
 collection = scene.add(hlbpy.Collection("TestCollection"))
-obj = collection.add(hlbpy.Empty("TestObject"))
 
-# text = collection.add(hlbpy.curve.Text("Hello World", "TestText"))
-tex = collection.add(hlbpy.curve.Tex("Hello Tex World", "TestTex"))
+tex = collection.add(hlbpy.curve.Tex(r"Hello Tex World: $3x^2 \Omega \in R \subset Q$", "TestTex"))
 
-# hlbpy.tex.tex_to_svg(r"$\Omega_{\mathrm{E}+1}=$", r"C:\Users\Tobias\coding\hlbpy\data\test.svg")
+for child in tex.children[:3]:
+    print(child.dimensions)
 
-print(obj.location)
+tex.update()
+
+for child in tex.children[:3]:
+    print(child.dimensions)
+pass
+

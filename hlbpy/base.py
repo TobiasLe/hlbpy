@@ -1,5 +1,6 @@
 import bpy
 
+
 class HighLevelBase:
     def __init__(self, name):
         self.bpy_object = None
@@ -25,3 +26,12 @@ class HighLevelBase:
             setattr(bpy_object, key, value)
         else:
             super().__setattr__(key, value)
+
+    @staticmethod
+    def update():
+        """
+        update blender stuff. For example dimensions or bound_box are recalculated
+        """
+        for scene in bpy.data.scenes:
+            for view_layer in scene.view_layers:
+                view_layer.update()
