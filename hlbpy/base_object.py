@@ -11,7 +11,7 @@ class HighLevelObject(HighLevelBase):
         if self.bpy_object is not None:
             all_hlbpy_objects_scene.bpy_object.collection.objects.link(self.bpy_object)
             for child in self.bpy_object.children:
-                all_hlbpy_objects_scene.collection.objects.link(child)
+                all_hlbpy_objects_scene.bpy_object.collection.objects.link(child)
             self.update()
 
     @property
