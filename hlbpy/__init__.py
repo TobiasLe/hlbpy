@@ -4,6 +4,7 @@ from . import misc
 from . import view
 from . import materials
 from . import curve
+from . import mesh
 from .empty import *
 from .collection import *
 from .scene import *

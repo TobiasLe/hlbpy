@@ -8,18 +8,13 @@ try:
 except ConnectionRefusedError:
     print("no connection to Debug server")
 
-
 scene = hlbpy.Scene("TestScene")
 collection = scene.add(hlbpy.Collection("TestCollection"))
 
-tex = collection.add(hlbpy.curve.Tex(r"Hello Tex World: $3x^2 \Omega \in R \subset Q$", "TestTex"))
+# tex = collection.add(hlbpy.curve.Tex(r"Hello Tex World: $3x^2 \Omega \in R \subset Q$", "TestTex"))
 
-for child in tex.children[:3]:
-    print(child.dimensions)
+cube = collection.add(hlbpy.mesh.Cube(1))
 
-tex.update()
+cube.get_bound([1, 0, 0])
 
-for child in tex.children[:3]:
-    print(child.dimensions)
 pass
-
