@@ -10,3 +10,4 @@ from .empty import *
 from .collection import *
 from .scene import *
 from . import tex
+from .directions import *
