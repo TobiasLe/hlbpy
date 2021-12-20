@@ -3,7 +3,7 @@ import numpy as np
 from .scene import Scene
 from .base import HighLevelBase
 from mathutils import Vector
-from .misc import apply_material_to_obj
+from .misc import apply_material_to_obj, get_bpy_obj
 
 all_hlbpy_objects_scene = Scene("all_hlbpy_objects", activate=False)
 
@@ -11,10 +11,8 @@ all_hlbpy_objects_scene = Scene("all_hlbpy_objects", activate=False)
 class HighLevelObject(HighLevelBase):
     def __init__(self, bpy_object):
         self.bpy_object = bpy_object
+        self.children = []
         all_hlbpy_objects_scene.bpy_object.collection.objects.link(self.bpy_object)
-        for child in self.bpy_object.children:
-            if child.name not in all_hlbpy_objects_scene.bpy_object.collection.objects.keys():
-                all_hlbpy_objects_scene.bpy_object.collection.objects.link(child)
         self.update()
 
     @property
@@ -48,8 +46,11 @@ class HighLevelObject(HighLevelBase):
         return self.bpy_object.parent
 
     @parent.setter
-    def parent(self, value):
-        self.bpy_object.parent = value
+    def parent(self, parent):
+        self.bpy_object.parent = parent.bpy_object
+        parent.children.append(self)
+
+
 
     def apply_material(self, material, recursively=False):
         apply_material_to_obj(self, material, recursively)

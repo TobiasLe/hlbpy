@@ -68,18 +68,18 @@ def srgb_to_linearrgb(srgb, limit=255):
     return linrgb
 
 
+def get_bpy_obj(obj):
+    try:
+        return obj.bpy_object
+    except AttributeError:
+        return obj
+
+
 def apply_material_to_obj(obj, material, recursively=False):
-    try:
-        bpy_material = material.bpy_object
-    except AttributeError:
-        bpy_material = material
-    try:
-        bpy_object = obj.bpy_object
-    except AttributeError:
-        bpy_object = obj
+    bpy_object = get_bpy_obj(obj)
+    bpy_material = get_bpy_obj(material)
 
     bpy_object.active_material = bpy_material
-
 
     if recursively:
         for child in bpy_object.children:

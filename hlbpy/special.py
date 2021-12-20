@@ -9,9 +9,9 @@ import numpy as np
 class ParentGroup(HighLevelObject):
     def __init__(self, children, name="ParentGroup"):
         bpy_object = bpy.data.objects.new(name, None)
-        for child in children:
-            child.parent = bpy_object
         super().__init__(bpy_object)
+        for child in children:
+            child.parent = self
 
 
 class SVG(ParentGroup):
@@ -20,8 +20,8 @@ class SVG(ParentGroup):
         loader = SVGLoader(bpy.context, self.file_path, True)
         loader.parse()
         loader.createGeom(False)
-
-        super().__init__(loader.objects, name)
+        high_level_objects = [HighLevelObject(obj) for obj in loader.objects]
+        super().__init__(high_level_objects, name)
 
 
 class Tex(SVG):
