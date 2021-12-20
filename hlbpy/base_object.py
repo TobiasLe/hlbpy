@@ -1,9 +1,10 @@
 import numpy as np
-
+import bpy
 from .scene import Scene
 from .base import HighLevelBase
 from mathutils import Vector
 from .misc import apply_material_to_obj, get_bpy_obj
+
 
 all_hlbpy_objects_scene = Scene("all_hlbpy_objects", activate=False)
 
@@ -14,6 +15,12 @@ class HighLevelObject(HighLevelBase):
         self.children = []
         all_hlbpy_objects_scene.bpy_object.collection.objects.link(self.bpy_object)
         self.update()
+
+    def __getitem__(self, key):
+        return self.children[key]
+
+    def __setitem__(self, key, value):
+        self.children[key] = value
 
     @property
     def center(self):
@@ -49,8 +56,6 @@ class HighLevelObject(HighLevelBase):
     def parent(self, parent):
         self.bpy_object.parent = parent.bpy_object
         parent.children.append(self)
-
-
 
     def apply_material(self, material, recursively=False):
         apply_material_to_obj(self, material, recursively)

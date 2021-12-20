@@ -30,10 +30,6 @@ class Tex(SVG):
             file_path = tex_to_svg_file(content, temp_dir_path)
             super().__init__(file_path, name)
 
-        print(self.get_children_bound([-1, 0, 0]))
-        print(np.array(self.bpy_object.children[0].bound_box))
         for child in self.bpy_object.children:
             child.scale = [scale] * 3
         self.update()
-        print(np.array(self.bpy_object.children[0].bound_box))
-        print(self.get_children_bound([-1, 0, 0]))
