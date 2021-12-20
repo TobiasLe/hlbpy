@@ -7,7 +7,7 @@ import numpy as np
 
 
 class ParentGroup(HighLevelObject):
-    def __init__(self, children, name):
+    def __init__(self, children, name="ParentGroup"):
         bpy_object = bpy.data.objects.new(name, None)
         for child in children:
             child.parent = bpy_object
@@ -15,7 +15,7 @@ class ParentGroup(HighLevelObject):
 
 
 class SVG(ParentGroup):
-    def __init__(self, file_path, name):
+    def __init__(self, file_path, name="SVG"):
         self.file_path = file_path
         loader = SVGLoader(bpy.context, self.file_path, True)
         loader.parse()
@@ -25,7 +25,7 @@ class SVG(ParentGroup):
 
 
 class Tex(SVG):
-    def __init__(self, content, name, scale=1000):
+    def __init__(self, content, name="tex", scale=1000):
         with tempfile.TemporaryDirectory() as temp_dir_path:
             file_path = tex_to_svg_file(content, temp_dir_path)
             super().__init__(file_path, name)
