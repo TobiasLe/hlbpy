@@ -40,7 +40,7 @@ def set_keyframes(obj, attribute, coordinates, frame_numbers=None, as_samples=Fa
         fcurve.keyframe_points.add(n_frames)
         frame_data = np.column_stack((frame_numbers, coordinates[:, i]))
         fcurve.keyframe_points.foreach_set("co", frame_data.flatten())
-        fcurve.keyframe_points.foreach_set("interpolation", [interpolation_mode]*n_frames)
+        fcurve.keyframe_points.foreach_set("interpolation", [interpolation_mode] * n_frames)
 
         if as_samples:
             fcurve.convert_to_samples(0, n_frames)
@@ -52,7 +52,6 @@ def set_keyframes(obj, attribute, coordinates, frame_numbers=None, as_samples=Fa
             if bezier_handles_right is not None:
                 bezier_handles_right_i = frame_data + np.array(bezier_handles_right)[:, i, :]
                 fcurve.keyframe_points.foreach_set("handle_right", bezier_handles_right_i.flatten())
-
 
 
 def srgb_to_linearrgb(srgb, limit=255):
@@ -67,3 +66,21 @@ def srgb_to_linearrgb(srgb, limit=255):
             lin_c = ((c + 0.055) / 1.055) ** 2.4
         linrgb.append(lin_c)
     return linrgb
+
+
+def apply_material_to_obj(obj, material, recursively=False):
+    try:
+        bpy_material = material.bpy_object
+    except AttributeError:
+        bpy_material = material
+    try:
+        bpy_object = obj.bpy_object
+    except AttributeError:
+        bpy_object = obj
+
+    bpy_object.active_material = bpy_material
+
+
+    if recursively:
+        for child in bpy_object.children:
+            apply_material_to_obj(child, material, recursively=True)

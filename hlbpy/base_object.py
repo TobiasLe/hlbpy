@@ -3,6 +3,7 @@ import numpy as np
 from .scene import Scene
 from .base import HighLevelBase
 from mathutils import Vector
+from .misc import apply_material_to_obj
 
 all_hlbpy_objects_scene = Scene("all_hlbpy_objects", activate=False)
 
@@ -35,7 +36,12 @@ class HighLevelObject(HighLevelBase):
 
     @scale.setter
     def scale(self, value):
-        self.bpy_object.scale = value
+        try:
+            iter(value)
+        except TypeError:
+            self.bpy_object.scale = [value] * 3
+        else:
+            self.bpy_object.scale = value
 
     @property
     def parent(self):
@@ -44,6 +50,9 @@ class HighLevelObject(HighLevelBase):
     @parent.setter
     def parent(self, value):
         self.bpy_object.parent = value
+
+    def apply_material(self, material, recursively=False):
+        apply_material_to_obj(self, material, recursively)
 
     def get_bound(self, direction):
         center = self.center

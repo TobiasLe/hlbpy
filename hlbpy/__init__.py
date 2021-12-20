@@ -6,6 +6,7 @@ from . import materials
 from . import curve
 from . import mesh
 from . import special
+from . import material
 from .empty import *
 from .collection import *
 from .scene import *
