@@ -14,11 +14,16 @@ class Text(HighLevelObject):
 
 
 class Curve(HighLevelObject):
-    def __init__(self, vertices, spline_type="POLY", name="Curve"):
+    def __init__(self, vertices, spline_type="POLY", name="Curve", bevel_object=None):
         """
-        :param vertices: array of shape: (n_vertices, 3)
-        :param spline_type: chose any from: "POLY", "BEZIER", or "NURBS"
+
+        Args:
+            vertices: array of shape: (n_vertices, 3)
+            spline_type: chose any from: "POLY", "BEZIER", or "NURBS"
+            name:
+            bevel_object:
         """
+
 
         curve = bpy.data.curves.new(name, type='CURVE')
         bpy_object = bpy.data.objects.new(name, curve)
@@ -33,25 +38,52 @@ class Curve(HighLevelObject):
             spline.points.add(len(vertices) - 1)  # spline has one point by default
             spline.points.foreach_set('co', vertices_with_type.flatten())
             spline.use_endpoint_u = True
+            spline.use_smooth = False
 
         super().__init__(bpy_object)
+        self._bevel_object = bevel_object
 
-    def add_flat_bevel(self):
-        pass
+    @property
+    def bevel_object(self):
+        return self._bevel_object
+
+    @bevel_object.setter
+    def bevel_object(self, value):
+        self.bpy_object.data.bevel_mode = "OBJECT"
+        self.bpy_object.data.bevel_object = value.bpy_object
+        self._bevel_object = value
+
+    @property
+    def shade_smooth(self):
+        return self.bpy_object.data.splines[0].use_smooth
+
+    @shade_smooth.setter
+    def shade_smooth(self, value):
+        self.bpy_object.data.splines[0].use_smooth = value
 
 
 class Polygon(Curve):
-    def __init__(self, n_corners, radius=1, spline_type="POLY", name="Curve"):
+    def __init__(self, n_corners, radius=1, spline_type="POLY", name="Polygon"):
         """
         Create a polygon shaped curve.
         Args:
             n_corners: Number of Corners
             radius:
         """
-        angles = np.linspace(0, 2*pi, n_corners+1)[:-1]
+        angles = np.linspace(0, 2 * pi, n_corners + 1)[:-1]
         x_values = np.sin(angles) * radius
         y_values = np.cos(angles) * radius
         z_values = np.zeros(n_corners)
         vertices = np.column_stack((x_values, y_values, z_values))
+        super().__init__(vertices, spline_type, name)
+        self.bpy_object.data.splines[0].use_cyclic_u = True
+
+
+class Rectangle(Curve):
+    def __init__(self, width, height, spline_type="POLY", name="Rectangle"):
+        vertices = np.array([[-width / 2, -height / 2, 0],
+                             [-width / 2, +height / 2, 0],
+                             [+width / 2, +height / 2, 0],
+                             [+width / 2, -height / 2, 0]])
         super().__init__(vertices, spline_type, name)
         self.bpy_object.data.splines[0].use_cyclic_u = True

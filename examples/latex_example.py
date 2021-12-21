@@ -15,7 +15,9 @@ collection = scene.add(hlbpy.Collection("TestCollection"))
 # tex = collection.add(hlbpy.special.Tex(r"Hello Tex World: $\mathrm{3x^2 \Omega \in R \subset Q}$", "TestTex"))
 # tex.move_children(-tex.get_children_bound([0, -1, 0]))
 
-polygon = collection.add(hlbpy.curve.Polygon(4, spline_type="NURBS"))
+polygon = collection.add(hlbpy.curve.Polygon(6))
+
+polygon.bevel_object = hlbpy.curve.Rectangle(width=0.1, height=0.01)
 
 # cube = collection.add(hlbpy.mesh.Cube())
 #
