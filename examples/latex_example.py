@@ -12,10 +12,10 @@ except ConnectionRefusedError:
 scene = hlbpy.Scene("TestScene")
 collection = scene.add(hlbpy.Collection("TestCollection"))
 
-tex = collection.add(hlbpy.special.Tex(r"Hello Tex World: $\mathrm{3x^2 \Omega \in R \subset Q}$", "TestTex"))
-tex.move_children(-tex.get_children_bound([0, -1, 0]))
+# tex = collection.add(hlbpy.special.Tex(r"Hello Tex World: $\mathrm{3x^2 \Omega \in R \subset Q}$", "TestTex"))
+# tex.move_children(-tex.get_children_bound([0, -1, 0]))
 
-
+polygon = collection.add(hlbpy.curve.Polygon(4, spline_type="NURBS"))
 
 # cube = collection.add(hlbpy.mesh.Cube())
 #
@@ -23,3 +23,5 @@ tex.move_children(-tex.get_children_bound([0, -1, 0]))
 # cube.bpy_object.scale = [5] * 3
 # b = cube.get_bound([-1, 0, 0])
 pass
+
+hlbpy.view.set_view([0, 0, 0], orthographic=True)
