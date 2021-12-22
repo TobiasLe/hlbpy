@@ -24,7 +24,6 @@ class Curve(HighLevelObject):
             bevel_object:
         """
 
-
         curve = bpy.data.curves.new(name, type='CURVE')
         bpy_object = bpy.data.objects.new(name, curve)
         spline = curve.splines.new(type=spline_type)
@@ -61,6 +60,23 @@ class Curve(HighLevelObject):
     def shade_smooth(self, value):
         self.bpy_object.data.splines[0].use_smooth = value
 
+    @property
+    def fill_mode(self):
+        return self.bpy_object.data.fill_mode
+
+    @fill_mode.setter
+    def fill_mode(self, value):
+        """allowed values: "NONE", "BOTH", "BACK", "FRONT" """
+        self.bpy_object.data.fill_mode = value
+
+    @property
+    def cyclic(self):
+        return self.bpy_object.data.splines[0].use_cyclic_u
+
+    @cyclic.setter
+    def cyclic(self, value):
+        self.bpy_object.data.splines[0].use_cyclic_u = value
+
 
 class Polygon(Curve):
     def __init__(self, n_corners, radius=1, spline_type="POLY", name="Polygon"):
@@ -76,7 +92,7 @@ class Polygon(Curve):
         z_values = np.zeros(n_corners)
         vertices = np.column_stack((x_values, y_values, z_values))
         super().__init__(vertices, spline_type, name)
-        self.bpy_object.data.splines[0].use_cyclic_u = True
+        self.cyclic = True
 
 
 class Rectangle(Curve):
@@ -86,4 +102,16 @@ class Rectangle(Curve):
                              [+width / 2, +height / 2, 0],
                              [+width / 2, -height / 2, 0]])
         super().__init__(vertices, spline_type, name)
-        self.bpy_object.data.splines[0].use_cyclic_u = True
+        self.cyclic = True
+
+
+class TipTriangle(Curve):
+    def __init__(self, width, length, thickness=0):
+        vertices = np.array([[-width / 2, 0, 0],
+                             [0, length, 0],
+                             [width / 2, 0, 0]])
+        super().__init__(vertices, name="TipTriangle")
+        self.fill_mode = "BOTH"
+        self.bpy_object.data.extrude = thickness/2
+        self.cyclic = True
+

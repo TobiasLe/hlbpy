@@ -36,6 +36,14 @@ class HighLevelObject(HighLevelBase):
         self.bpy_object.location = value
 
     @property
+    def rotation_euler(self):
+        return self.bpy_object.rotation_euler
+
+    @rotation_euler.setter
+    def rotation_euler(self, value):
+        self.bpy_object.rotation_euler = value
+
+    @property
     def scale(self):
         self.bpy_object.scale
 

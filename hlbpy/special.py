@@ -1,9 +1,12 @@
 import bpy
 from .base_object import HighLevelObject
+from .curve import Curve, TipTriangle, Rectangle
 from .io_curve_svg.import_svg import SVGLoader
 from .tex import tex_to_svg_file
 import tempfile
 import numpy as np
+import math
+from mathutils import Vector
 
 
 class ParentGroup(HighLevelObject):
@@ -33,3 +36,20 @@ class Tex(SVG):
         for child in self.bpy_object.children:
             child.scale = [scale] * 3
         self.update()
+
+
+class Arrow(Curve):
+    def __init__(self, coordinates, line_width, tip_width, tip_length, thickness, name="Arrow"):
+        coordinates = np.array(coordinates, dtype=float)
+        tip_direction = coordinates[-1] - coordinates[-2]
+        tip_direction = tip_direction / np.linalg.norm(tip_direction)
+        coordinates[-1] -= tip_direction * tip_length  # making space for the tip
+
+        super().__init__(coordinates, spline_type="NURBS", name=name)
+
+        self.bevel_object = Rectangle(line_width, thickness)
+
+        self.tip = TipTriangle(tip_width, tip_length, thickness)
+        self.tip.parent = self
+        self.tip.location = coordinates[-1]
+        self.tip.rotation_euler = Vector([0, 1, 0]).rotation_difference(Vector(tip_direction)).to_euler()
