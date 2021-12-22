@@ -16,6 +16,9 @@ class ParentGroup(HighLevelObject):
         for child in children:
             child.parent = self
 
+    def get_bound(self, direction):
+        return self.get_children_bound(direction)
+
 
 class SVG(ParentGroup):
     def __init__(self, file_path, name="SVG"):

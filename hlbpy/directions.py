@@ -1,6 +1,6 @@
 import numpy as np
 
-# Geometry: directions
+
 CENTER: np.ndarray = np.array((0.0, 0.0, 0.0))
 """The center of the coordinate system."""
 

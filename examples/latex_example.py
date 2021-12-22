@@ -2,6 +2,7 @@ import bpy
 import hlbpy
 import pydevd_pycharm
 import numpy as np
+from math import pi
 
 try:
     pydevd_pycharm.settrace('localhost', port=1090, stdoutToServer=True, stderrToServer=True,
@@ -19,14 +20,19 @@ collection = scene.add(hlbpy.Collection("TestCollection"))
 #
 # polygon.bevel_object = hlbpy.curve.Rectangle(width=0.1, height=0.01)
 
-# cube = collection.add(hlbpy.mesh.Cube())
-#
-# a = cube.get_bound([-1, 0, 0])
-# cube.bpy_object.scale = [5] * 3
-# b = cube.get_bound([-1, 0, 0])
-arrow = collection.add(hlbpy.special.Arrow([[0, 0, 0],
-                                            [0, 1, 0],
-                                            [2, 2, 0]], 0.05, 0.2, 0.2, 0.02))
+cube = collection.add(hlbpy.mesh.Cube())
+
+a = cube.get_bound([-1, 0, 0])
+cube.scale = 3
+b = cube.get_bound([-1, 0, 0])
+cube.rotation_euler = [0, 0, pi/4]
+c = cube.get_bound([-1, 0, 0])
+empty = collection.add(hlbpy.Empty("test"))
+empty.location = cube.get_bound([-1, 0, 0])
+
+# arrow = collection.add(hlbpy.special.Arrow([[0, 0, 0],
+#                                             [0, 1, 0],
+#                                             [2, 2, 0]], 0.05, 0.2, 0.2, 0.02))
 
 pass
 

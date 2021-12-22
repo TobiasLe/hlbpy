@@ -17,14 +17,14 @@ class PrincipledBSDF(HighLevelBase):
 
     @srgb.setter
     def srgb(self, value):
-        self.principled_BSDF_node.inputs[0].default_value = srgb_to_linearrgb(value) + [255]
+        self.principled_BSDF_node.inputs["Base Color"].default_value = srgb_to_linearrgb(value) + [255]
 
     @property
     def alpha(self):
-        self.principled_BSDF_node.inputs[21].default_value
+        self.principled_BSDF_node.inputs["Alpha"].default_value
 
     @alpha.setter
     def alpha(self, value):
-        self.principled_BSDF_node.inputs[21].default_value = value
+        self.principled_BSDF_node.inputs["Alpha"].default_value = value
         if value != 1:
             self.bpy_object.blend_method = "BLEND"
