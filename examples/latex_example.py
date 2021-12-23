@@ -11,7 +11,7 @@ except ConnectionRefusedError:
     print("no connection to Debug server")
 
 scene = hlbpy.Scene("TestScene")
-collection = scene.add(hlbpy.Collection("TestCollection"))
+collection = scene.link(hlbpy.Collection("TestCollection"))
 
 # tex = collection.add(hlbpy.special.Tex(r"Hello Tex World: $\mathrm{3x^2 \Omega \in R \subset Q}$", "TestTex"))
 # tex.move_children(-tex.get_children_bound([0, -1, 0]))
@@ -20,7 +20,7 @@ collection = scene.add(hlbpy.Collection("TestCollection"))
 #
 # polygon.bevel_object = hlbpy.curve.Rectangle(width=0.1, height=0.01)
 
-cube = collection.add(hlbpy.mesh.Cube())
+cube = collection.link(hlbpy.mesh.Cube())
 
 a = cube.get_bound([-1, 0, 0])
 cube.scale = 3
