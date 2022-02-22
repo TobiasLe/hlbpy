@@ -3,6 +3,14 @@ import numpy as np
 
 
 class HighLevelBase:
+    if "all_hlbpy_objects" in [s.name for s in bpy.data.scenes]:
+        all_hlbpy_objects_scene = bpy.data.scenes["all_hlbpy_objects"]
+        objects = all_hlbpy_objects_scene.collection.objects
+        while objects:
+            objects.unlink(objects[0])
+    else:
+        all_hlbpy_objects_scene = bpy.data.scenes.new("all_hlbpy_objects")
+
     def __init__(self, name):
         self.bpy_object = None
 
@@ -33,9 +41,8 @@ class HighLevelBase:
         """
         update blender stuff. For example dimensions or bound_box are recalculated
         """
-        for scene in bpy.data.scenes:
-            for view_layer in scene.view_layers:
-                view_layer.update()
+        for view_layer in HighLevelBase.all_hlbpy_objects_scene.view_layers:
+            view_layer.update()
 
     def set_keyframes(self, attribute, values, frame_numbers=None, index=None, as_samples=False, interpolation_mode=1,
                       bezier_handles_left=None, bezier_handles_right=None):

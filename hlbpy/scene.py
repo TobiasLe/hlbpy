@@ -12,7 +12,10 @@ class Scene(HighLevelBase):
             bpy.context.window.scene = self.bpy_object
 
     def link(self, collection):
-        self.bpy_object.collection.children.link(collection.bpy_object)
+        try:
+            self.bpy_object.collection.children[collection.bpy_object.name]
+        except KeyError:
+            self.bpy_object.collection.children.link(collection.bpy_object)
         return collection
 
     @classmethod

@@ -3,6 +3,7 @@ from .base_object import HighLevelObject
 from .curve import Curve, TipTriangle, Rectangle
 from .io_curve_svg.import_svg import SVGLoader
 from .tex import tex_to_svg_file
+from .directions import *
 import tempfile
 import numpy as np
 import math
@@ -10,8 +11,9 @@ from mathutils import Vector
 
 
 class ParentGroup(HighLevelObject):
-    def __init__(self, children, name="ParentGroup"):
-        bpy_object = bpy.data.objects.new(name, None)
+    def __init__(self, children, name="ParentGroup", bpy_object=None):
+        if bpy_object is None:
+            bpy_object = bpy.data.objects.new(name, None)
         super().__init__(bpy_object)
         for child in children:
             child.parent = self
@@ -39,6 +41,7 @@ class Tex(SVG):
         for child in self.bpy_object.children:
             child.scale = [scale] * 3
         self.update()
+        self.align_children(CENTER)
 
 
 class Arrow(Curve):

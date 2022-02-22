@@ -1,13 +1,20 @@
 import bpy
 from .base import HighLevelBase
+from .base_object import HighLevelObject
 
 
 class Collection(HighLevelBase):
     def __init__(self, name="Collection", bpy_object=None, reuse=True, clear=False):
+        self.objects = []
+
         if bpy_object is None:
             already_present = name in [c.name for c in bpy.data.collections]
             if reuse and already_present:
                 self.bpy_object = bpy.data.collections[name]
+                if not clear:
+                    for obj in self.bpy_object.objects:
+                        self.objects.append(HighLevelObject(obj, no_update=True))
+                    self.update()
             else:
                 self.bpy_object = bpy.data.collections.new(name)
 
@@ -18,13 +25,34 @@ class Collection(HighLevelBase):
         else:
             self.bpy_object = bpy_object
 
-    def link(self, object):
+    def link(self, obj, hierarchically=False):
         # Todo: link collections
         try:
-            bpy_object = object.bpy_object
+            bpy_object = obj.bpy_object
         except AttributeError:
-            bpy_object = object
-        self.bpy_object.objects.link(bpy_object)
-        for child in bpy_object.children:
-            self.link(child)
-        return object
+            bpy_object = obj
+
+        if isinstance(obj, Collection):
+            try:
+                self.bpy_object.children[bpy_object.name]
+            except KeyError:
+                self.bpy_object.children.link(bpy_object)
+                if hierarchically:
+                    raise NotImplementedError
+        else:
+            self.objects.append(obj)
+            self.bpy_object.objects.link(obj.bpy_object)
+
+            if hierarchically:
+                for child in obj.children:
+                    self.link(child, hierarchically)
+        return obj
+
+    def __len__(self):
+        return len(self.objects)
+
+    def __getitem__(self, item):
+        return self.objects[item]
+
+    def __iter__(self):
+        return self.objects.__iter__()
