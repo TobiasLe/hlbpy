@@ -1,0 +1,1 @@
+from . import curve_assign_shapekey

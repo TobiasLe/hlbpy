@@ -162,4 +162,12 @@ class HighLevelObject(HighLevelBase):
         Returns:
 
         """
-        np.array(self.bpy_object.matrix_global @ Vector(vector))
+        return np.array(self.bpy_object.matrix_world @ Vector(vector))
+
+    def hide_until(self, frame):
+        self.set_keyframes("hide_viewport", [1, 0], [frame-1, frame], interpolation_mode=0)
+        self.set_keyframes("hide_render", [1, 0], [frame-1, frame], interpolation_mode=0)
+
+    def hide_from(self, frame):
+        self.set_keyframes("hide_viewport", [0, 1], [frame, frame+1], interpolation_mode=0)
+        self.set_keyframes("hide_render", [0, 1], [frame, frame+1], interpolation_mode=0)

@@ -6,6 +6,7 @@ from .base_object import HighLevelObject
 class Collection(HighLevelBase):
     def __init__(self, name="Collection", bpy_object=None, reuse=True, clear=False):
         self.objects = []
+        self.objects_in_hierarchy = []
 
         if bpy_object is None:
             already_present = name in [c.name for c in bpy.data.collections]
@@ -25,7 +26,7 @@ class Collection(HighLevelBase):
         else:
             self.bpy_object = bpy_object
 
-    def link(self, obj, hierarchically=False):
+    def link(self, obj, hierarchically=True, is_child=False):
         # Todo: link collections
         try:
             bpy_object = obj.bpy_object
@@ -37,15 +38,15 @@ class Collection(HighLevelBase):
                 self.bpy_object.children[bpy_object.name]
             except KeyError:
                 self.bpy_object.children.link(bpy_object)
-                if hierarchically:
-                    raise NotImplementedError
         else:
-            self.objects.append(obj)
+            if not is_child:
+                self.objects.append(obj)
+            self.objects_in_hierarchy.append(obj)
             self.bpy_object.objects.link(obj.bpy_object)
 
             if hierarchically:
                 for child in obj.children:
-                    self.link(child, hierarchically)
+                    self.link(child, hierarchically, is_child=True)
         return obj
 
     def __len__(self):

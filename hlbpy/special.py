@@ -28,7 +28,7 @@ class SVG(ParentGroup):
         loader = SVGLoader(bpy.context, self.file_path, True)
         loader.parse()
         loader.createGeom(False)
-        high_level_objects = [HighLevelObject(obj) for obj in loader.objects]
+        high_level_objects = [Curve(bpy_object=obj) for obj in loader.objects]
         super().__init__(high_level_objects, name)
 
 
