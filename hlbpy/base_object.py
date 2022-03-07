@@ -2,12 +2,14 @@ from .base import HighLevelBase
 from .directions import *
 from mathutils import Vector
 from .misc import apply_material_to_obj, get_bpy_obj
+import bpy
 
 
 class HighLevelObject(HighLevelBase):
     def __init__(self, bpy_object, no_update=False):
         self.bpy_object = bpy_object
         self.children = []
+        self._parent = None
         HighLevelBase.all_hlbpy_objects_scene.collection.objects.link(self.bpy_object)
         if not no_update:
             self.update()
@@ -17,6 +19,9 @@ class HighLevelObject(HighLevelBase):
 
     def __setitem__(self, key, value):
         self.children[key] = value
+
+    def __len__(self):
+        return len(self.children)
 
     @property
     def center(self):
@@ -81,10 +86,13 @@ class HighLevelObject(HighLevelBase):
 
     @property
     def parent(self):
-        return self.bpy_object.parent
+        return self._parent
 
     @parent.setter
     def parent(self, parent):
+        if self._parent:
+            self._parent.children.remove(self)
+        self._parent = parent
         self.bpy_object.parent = parent.bpy_object
         parent.children.append(self)
 
@@ -171,3 +179,9 @@ class HighLevelObject(HighLevelBase):
     def hide_from(self, frame):
         self.set_keyframes("hide_viewport", [0, 1], [frame, frame+1], interpolation_mode=0)
         self.set_keyframes("hide_render", [0, 1], [frame, frame+1], interpolation_mode=0)
+
+    def delete(self):
+        if self._parent:
+            self._parent.children.remove(self)
+            bpy.data.objects.remove(self.bpy_object)
+

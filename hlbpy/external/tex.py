@@ -45,6 +45,8 @@ import re
 import unicodedata
 from pathlib import Path
 import copy
+import operator as op
+from functools import reduce
 
 logger = logging.getLogger("hlbpy")
 
@@ -566,3 +568,84 @@ def print_tex_error(tex_compilation_log, error_start_index, tex_source):
         if match is not None:
             for insight in get_insight(match):
                 logger.info(insight)
+
+
+def get_modified_expression(tex_string):
+    result = tex_string
+    result = result.strip()
+    result = modify_special_strings(result)
+    return result
+
+
+def modify_special_strings(tex):
+    tex = tex.strip()
+    should_add_filler = reduce(
+        op.or_,
+        [
+            # Fraction line needs something to be over
+            tex == "\\over",
+            tex == "\\overline",
+            # Make sure sqrt has overbar
+            tex == "\\sqrt",
+            tex == "\\sqrt{",
+            # Need to add blank subscript or superscript
+            tex.endswith("_"),
+            tex.endswith("^"),
+            tex.endswith("dot"),
+        ],
+    )
+
+    if should_add_filler:
+        filler = "{\\quad}"
+        tex += filler
+
+    if tex == "\\substack":
+        tex = "\\quad"
+
+    if tex == "":
+        tex = "\\quad"
+
+    # To keep files from starting with a line break
+    if tex.startswith("\\\\"):
+        tex = tex.replace("\\\\", "\\quad\\\\")
+
+    # Handle imbalanced \left and \right
+    num_lefts, num_rights = (
+        len([s for s in tex.split(substr)[1:] if s and s[0] in "(){}[]|.\\"])
+        for substr in ("\\left", "\\right")
+    )
+    if num_lefts != num_rights:
+        tex = tex.replace("\\left", "\\big")
+        tex = tex.replace("\\right", "\\big")
+
+    tex = remove_stray_braces(tex)
+
+    for context in ["array"]:
+        begin_in = ("\\begin{%s}" % context) in tex
+        end_in = ("\\end{%s}" % context) in tex
+        if begin_in ^ end_in:
+            # Just turn this into a blank string,
+            # which means caller should leave a
+            # stray \\begin{...} with other symbols
+            tex = ""
+    return tex
+
+
+def remove_stray_braces(tex):
+    r"""
+    Makes :class:`~.MathTex` resilient to unmatched braces.
+
+    This is important when the braces in the TeX code are spread over
+    multiple arguments as in, e.g., ``MathTex(r"e^{i", r"\tau} = 1")``.
+    """
+
+    # "\{" does not count (it's a brace literal), but "\\{" counts (it's a new line and then brace)
+    num_lefts = tex.count("{") - tex.count("\\{") + tex.count("\\\\{")
+    num_rights = tex.count("}") - tex.count("\\}") + tex.count("\\\\}")
+    while num_rights > num_lefts:
+        tex = "{" + tex
+        num_lefts += 1
+    while num_lefts > num_rights:
+        tex = tex + "}"
+        num_rights += 1
+    return tex

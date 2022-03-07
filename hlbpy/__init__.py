@@ -11,5 +11,5 @@ from . import material
 from .empty import *
 from .collection import *
 from .scene import *
-from . import tex
+from .external import tex
 from .directions import *

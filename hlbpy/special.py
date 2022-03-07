@@ -2,11 +2,11 @@ import bpy
 from .base_object import HighLevelObject
 from .curve import Curve, TipTriangle, Rectangle
 from .io_curve_svg.import_svg import SVGLoader
-from .tex import tex_to_svg_file
+from .external.tex import tex_to_svg_file
+from .external.tex import get_modified_expression
 from .directions import *
 import tempfile
 import numpy as np
-import math
 from mathutils import Vector
 
 
@@ -33,15 +33,39 @@ class SVG(ParentGroup):
 
 
 class Tex(SVG):
-    def __init__(self, content, name="tex", scale=1000):
+    def __init__(self, tex_string, name=None, environment="center", scale=1000):
+        self.tex_string = tex_string
+        if name is None:
+            name = tex_string[:10] if len(tex_string) > 10 else tex_string
+
         with tempfile.TemporaryDirectory() as temp_dir_path:
-            file_path = tex_to_svg_file(content, temp_dir_path)
+            print("Compiling ", tex_string)
+            file_path = tex_to_svg_file(get_modified_expression(tex_string), temp_dir_path, environment=environment)
             super().__init__(file_path, name)
 
         for child in self.bpy_object.children:
             child.scale = [scale] * 3
         self.update()
         self.align_children(CENTER)
+
+
+class MathTex(Tex):
+    def __init__(self, *tex_strings, name=None, scale=1000):
+        super().__init__("".join(tex_strings), name=name, environment="align*", scale=scale)
+
+        begin = 0
+        subobjects = []
+        for tex_string in tex_strings:
+            subobject = Tex(tex_string, environment="align*", scale=scale)
+            end = begin + len(subobject)
+            for obj in list(subobject.children):
+                obj.delete()
+            for i in range(begin, end):
+                self.children[0].parent = subobject
+            subobjects.append(subobject)
+            begin = end
+        for subobject in subobjects:
+            subobject.parent = self
 
 
 class Arrow(Curve):
