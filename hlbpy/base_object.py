@@ -9,6 +9,7 @@ class HighLevelObject(HighLevelBase):
     def __init__(self, bpy_object, no_update=False):
         self.bpy_object = bpy_object
         self.children = []
+        self.linked_collections = []
         self._parent = None
         HighLevelBase.all_hlbpy_objects_scene.collection.objects.link(self.bpy_object)
         if not no_update:
@@ -184,4 +185,16 @@ class HighLevelObject(HighLevelBase):
         if self._parent:
             self._parent.children.remove(self)
             bpy.data.objects.remove(self.bpy_object)
+
+    def copy(self, liked=False, link_to_same_collections=True):
+        bpy_object_copy = self.bpy_object.copy()
+        if not liked:
+            bpy_object_copy.data = self.bpy_object.data.copy()
+        bpy_object_copy.animation_data_clear()
+
+        c = type(self)(bpy_object=bpy_object_copy)
+        if link_to_same_collections:
+            for collection in self.linked_collections:
+                collection.link(c)
+        return c
 

@@ -67,6 +67,41 @@ class MathTex(Tex):
         for subobject in subobjects:
             subobject.parent = self
 
+    def transform(self, target, start, stop=None, n_frames=30, hide=True, adjust_spline_number=True):
+        self.equalize_child_numbers(target)
+
+        for own_child, target_child in zip(self.children, target.children):
+            for own_child_child, target_child_child in zip(own_child, target_child):
+                own_child_child.transform(target_child_child,
+                                          start=start,
+                                          stop=stop,
+                                          n_frames=n_frames,
+                                          hide=hide,
+                                          adjust_spline_number=adjust_spline_number)
+
+    def equalize_child_numbers(self, target):
+        for own_child, target_child in zip(self.children, target.children):
+            if len(own_child) > len(target_child):
+                to_extend = target_child
+                other = own_child
+            elif len(target_child) > len(own_child):
+                to_extend = own_child
+                other = target_child
+            else:
+                continue
+
+            repeat_indices = (np.arange(len(other)) * len(to_extend) // len(other))
+            copy_factors = [sum(repeat_indices == i) for i in range(len(to_extend))]
+            new_children = []
+            for child, factor in zip(to_extend.children, copy_factors):
+                new_children.append(child)
+                for _ in range(1, factor):
+                    new_children.append(child.copy())
+
+            for child in new_children:
+                child.parent = to_extend
+            pass
+
 
 class Arrow(Curve):
     def __init__(self, coordinates, line_width, tip_width, tip_length, thickness, name="Arrow"):

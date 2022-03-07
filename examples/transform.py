@@ -11,13 +11,14 @@ except ConnectionRefusedError:
 scene = hlbpy.Scene.from_context()
 collection = scene.link(hlbpy.Collection("TestCollection"))
 
-tex1 = collection.link(hlbpy.special.MathTex(r"\frac{1}{T} = {dS \over  ", r"dE}"))
-# tex2 = collection.link(hlbpy.special.Tex(r"o"))
-# tex3 = collection.link(hlbpy.special.Tex(r"b"))
+tex1 = collection.link(hlbpy.special.MathTex(r"\frac{1}{T} = ", "{dS", r" \over dE}"))
+tex2 = collection.link(hlbpy.special.MathTex(r"\frac{1}{T} = ", "{d ln \Omega", r" \over dE}"))
 
 
-# curve_1 = tex1[0]
-# curve_2 = tex2[0]
-# curve_1.transform(curve_2, 0, 30)
+
+# tex1 = collection.link(hlbpy.special.MathTex(r"a", r"b"))
+# tex2 = collection.link(hlbpy.special.MathTex(r"a", r"bb"))
+
+tex1.transform(tex2, 0, 30)
 
 hlbpy.view.set_view([0, 0, 0], orthographic=True)

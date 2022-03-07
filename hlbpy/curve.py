@@ -97,18 +97,18 @@ class Curve(HighLevelObject):
                     to_extend = self
                     other = target
 
-                    while len(to_extend.bpy_object.data.splines) < len(other.bpy_object.data.splines):
-                        i = len(to_extend.bpy_object.data.splines)
-                        spline = to_extend.bpy_object.data.splines.new(type="BEZIER")
-                        n_other_points = len(other.bpy_object.data.splines[i].bezier_points)
-                        spline.bezier_points.add(n_other_points - 1)
-                        spline.use_cyclic_u = True
+                while len(to_extend.bpy_object.data.splines) < len(other.bpy_object.data.splines):
+                    i = len(to_extend.bpy_object.data.splines)
+                    spline = to_extend.bpy_object.data.splines.new(type="BEZIER")
+                    n_other_points = len(other.bpy_object.data.splines[i].bezier_points)
+                    spline.bezier_points.add(n_other_points - 1)
+                    spline.use_cyclic_u = True
 
-                        spawn_point = to_extend.bpy_object.data.splines[0].bezier_points[0].co
-                        spawn_array = np.array([spawn_point] * n_other_points).flatten()
-                        spline.bezier_points.foreach_set("co", spawn_array)
-                        spline.bezier_points.foreach_set("handle_left", spawn_array)
-                        spline.bezier_points.foreach_set("handle_right", spawn_array)
+                    spawn_point = to_extend.bpy_object.data.splines[0].bezier_points[0].co
+                    spawn_array = np.array([spawn_point] * n_other_points).flatten()
+                    spline.bezier_points.foreach_set("co", spawn_array)
+                    spline.bezier_points.foreach_set("handle_left", spawn_array)
+                    spline.bezier_points.foreach_set("handle_right", spawn_array)
 
         curve_transform(self.bpy_object, [target.bpy_object],
                         removeOriginal=False,

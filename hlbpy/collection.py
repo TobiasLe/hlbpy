@@ -27,7 +27,6 @@ class Collection(HighLevelBase):
             self.bpy_object = bpy_object
 
     def link(self, obj, hierarchically=True, is_child=False):
-        # Todo: link collections
         try:
             bpy_object = obj.bpy_object
         except AttributeError:
@@ -43,6 +42,7 @@ class Collection(HighLevelBase):
                 self.objects.append(obj)
             self.objects_in_hierarchy.append(obj)
             self.bpy_object.objects.link(obj.bpy_object)
+            obj.linked_collections.append(self)
 
             if hierarchically:
                 for child in obj.children:
