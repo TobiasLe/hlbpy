@@ -44,7 +44,7 @@ class HighLevelBase:
         for view_layer in HighLevelBase.all_hlbpy_objects_scene.view_layers:
             view_layer.update()
 
-    def set_keyframes(self, attribute, values, frame_numbers=None, index=None, as_samples=False, interpolation_mode=1,
+    def set_keyframes(self, attribute, values, frame_numbers=None, index=None, as_samples=False, interpolation_mode="LINEAR",
                       bezier_handles_left=None, bezier_handles_right=None):
         """
         Set a whole array of keyframes at once.
@@ -55,7 +55,7 @@ class HighLevelBase:
             frame_numbers: List of frame numbers. If None frame numbers 0,1,2,3.. will be used.
             index: indoex of attribute e.g. for location: 0 for x 1 for y ...
             as_samples: If True: Converts the keyframes into samples. (no interpolation between keyframes)
-            interpolation_mode: 0 for CONSTANT, 1 for LINEAR, and 2 for BEZIER
+            interpolation_mode: "CONSTANT", "LINEAR", or "BEZIER"
                                 (Warning: If bezier handles are not set, all handles are at (0,0))
             bezier_handles_left: coordinates of the left bezier handle relative to the keyframe coordinate.
                                  shape: (n_keyframes, n_attribute_dimensions, handle_xy)
@@ -64,6 +64,9 @@ class HighLevelBase:
         Returns:
 
         """
+        assert isinstance(interpolation_mode, str)
+        interpolation_mode_number = {"CONSTANT": 0, "LINEAR": 1, "BEZIER":2}[interpolation_mode]
+
         values = np.array(values)
         if values.ndim == 1:
             values = np.expand_dims(values, axis=1)
@@ -80,24 +83,39 @@ class HighLevelBase:
 
         for i in range(values.shape[1]):
             if values.shape[1] > 1:
-                fcurve = self.bpy_object.animation_data.action.fcurves.new(attribute, index=i)
+                index_to_use = i
             else:
                 if index is not None:
-                    fcurve = self.bpy_object.animation_data.action.fcurves.new(attribute, index=index)
+                    index_to_use = index
+
                 else:
-                    fcurve = self.bpy_object.animation_data.action.fcurves.new(attribute)
-            fcurve.keyframe_points.add(n_frames)
-            frame_data = np.column_stack((frame_numbers, values[:, i]))
-            fcurve.keyframe_points.foreach_set("co", frame_data.flatten())
-            fcurve.keyframe_points.foreach_set("interpolation", [interpolation_mode] * n_frames)
+                    index_to_use = 0
+
+            fcurve = self.bpy_object.animation_data.action.fcurves.find(attribute, index=index_to_use)
+
+            if not fcurve:
+                fcurve = self.bpy_object.animation_data.action.fcurves.new(attribute, index=index_to_use)
+
+                fcurve.keyframe_points.add(n_frames)
+                frame_data = np.column_stack((frame_numbers, values[:, i]))
+                fcurve.keyframe_points.foreach_set("co", frame_data.flatten())
+                fcurve.keyframe_points.foreach_set("interpolation", [interpolation_mode_number] * n_frames)
+                if interpolation_mode == "BEZIER":
+                    if bezier_handles_left is not None:
+                        bezier_handles_left_i = frame_data + np.array(bezier_handles_left)[:, i, :]
+                        fcurve.keyframe_points.foreach_set("handle_left", bezier_handles_left_i.flatten())
+                    if bezier_handles_right is not None:
+                        bezier_handles_right_i = frame_data + np.array(bezier_handles_right)[:, i, :]
+                        fcurve.keyframe_points.foreach_set("handle_right", bezier_handles_right_i.flatten())
+
+            else:
+                for frame_number, value in zip(frame_numbers, values[:, i]):
+                    key_frame = fcurve.keyframe_points.insert(frame_number, value, options={"FAST"})
+                    key_frame.interpolation = interpolation_mode
+                    if interpolation_mode == "BEZIER":
+                        raise NotImplementedError("inserting bezier keyframes to existing kurve not implemented yet")
 
             if as_samples:
                 fcurve.convert_to_samples(0, n_frames)
 
-            if interpolation_mode == 2:
-                if bezier_handles_left is not None:
-                    bezier_handles_left_i = frame_data + np.array(bezier_handles_left)[:, i, :]
-                    fcurve.keyframe_points.foreach_set("handle_left", bezier_handles_left_i.flatten())
-                if bezier_handles_right is not None:
-                    bezier_handles_right_i = frame_data + np.array(bezier_handles_right)[:, i, :]
-                    fcurve.keyframe_points.foreach_set("handle_right", bezier_handles_right_i.flatten())
+

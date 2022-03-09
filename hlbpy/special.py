@@ -5,6 +5,7 @@ from .io_curve_svg.import_svg import SVGLoader
 from .external.tex import tex_to_svg_file
 from .external.tex import get_modified_expression
 from .directions import *
+from .empty import Empty
 import tempfile
 import numpy as np
 from mathutils import Vector
@@ -56,7 +57,10 @@ class MathTex(Tex):
         begin = 0
         subobjects = []
         for tex_string in tex_strings:
-            subobject = Tex(tex_string, environment="align*", scale=scale)
+            if tex_string:
+                subobject = Tex(tex_string, environment="align*", scale=scale)
+            else:
+                subobject = Empty()
             end = begin + len(subobject)
             for obj in list(subobject.children):
                 obj.delete()

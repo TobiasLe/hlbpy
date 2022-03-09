@@ -1,7 +1,5 @@
-import bpy
 import hlbpy
-import pydevd_pycharm
-import numpy as np
+hlbpy.run_in_blender()
 from math import pi
 
 try:

@@ -174,12 +174,12 @@ class HighLevelObject(HighLevelBase):
         return np.array(self.bpy_object.matrix_world @ Vector(vector))
 
     def hide_until(self, frame):
-        self.set_keyframes("hide_viewport", [1, 0], [frame-1, frame], interpolation_mode=0)
-        self.set_keyframes("hide_render", [1, 0], [frame-1, frame], interpolation_mode=0)
+        self.set_keyframes("hide_viewport", [1, 0], [frame-1, frame], interpolation_mode="CONSTANT")
+        self.set_keyframes("hide_render", [1, 0], [frame-1, frame], interpolation_mode="CONSTANT")
 
     def hide_from(self, frame):
-        self.set_keyframes("hide_viewport", [0, 1], [frame, frame+1], interpolation_mode=0)
-        self.set_keyframes("hide_render", [0, 1], [frame, frame+1], interpolation_mode=0)
+        self.set_keyframes("hide_viewport", [0, 1], [frame, frame+1], interpolation_mode="CONSTANT")
+        self.set_keyframes("hide_render", [0, 1], [frame, frame+1], interpolation_mode="CONSTANT")
 
     def delete(self):
         if self._parent:
@@ -190,7 +190,6 @@ class HighLevelObject(HighLevelBase):
         bpy_object_copy = self.bpy_object.copy()
         if not liked:
             bpy_object_copy.data = self.bpy_object.data.copy()
-        bpy_object_copy.animation_data_clear()
 
         c = type(self)(bpy_object=bpy_object_copy)
         if link_to_same_collections:
