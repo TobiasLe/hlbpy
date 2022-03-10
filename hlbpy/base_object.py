@@ -11,6 +11,7 @@ class HighLevelObject(HighLevelBase):
         self.children = []
         self.linked_collections = []
         self._parent = None
+        self._material = None
         HighLevelBase.all_hlbpy_objects_scene.collection.objects.link(self.bpy_object)
         if not no_update:
             self.update()
@@ -63,6 +64,14 @@ class HighLevelObject(HighLevelBase):
         self.update()
 
     @property
+    def name(self):
+        return self.bpy_object.name
+
+    @name.setter
+    def name(self, value):
+        self.bpy_object.name = value
+
+    @property
     def rotation_euler(self):
         return self.bpy_object.rotation_euler
 
@@ -97,8 +106,19 @@ class HighLevelObject(HighLevelBase):
         self.bpy_object.parent = parent.bpy_object
         parent.children.append(self)
 
-    def apply_material(self, material, recursively=False):
-        apply_material_to_obj(self, material, recursively)
+    @property
+    def material(self):
+        return self._material
+
+    @material.setter
+    def material(self, value):
+        self.bpy_object.active_material = value.bpy_object
+        self._material = value
+
+    def set_recursively(self, attribute, value):
+        setattr(self, attribute, value)
+        for child in self:
+            child.set_recursively(attribute, value)
 
     def get_bound(self, direction):
         return self.get_own_bound(direction)
@@ -174,12 +194,12 @@ class HighLevelObject(HighLevelBase):
         return np.array(self.bpy_object.matrix_world @ Vector(vector))
 
     def hide_until(self, frame):
-        self.set_keyframes("hide_viewport", [1, 0], [frame-1, frame], interpolation_mode="CONSTANT")
-        self.set_keyframes("hide_render", [1, 0], [frame-1, frame], interpolation_mode="CONSTANT")
+        self.set_keyframes("hide_viewport", [1, 0], [frame - 1, frame], interpolation_mode="CONSTANT")
+        self.set_keyframes("hide_render", [1, 0], [frame - 1, frame], interpolation_mode="CONSTANT")
 
     def hide_from(self, frame):
-        self.set_keyframes("hide_viewport", [0, 1], [frame, frame+1], interpolation_mode="CONSTANT")
-        self.set_keyframes("hide_render", [0, 1], [frame, frame+1], interpolation_mode="CONSTANT")
+        self.set_keyframes("hide_viewport", [0, 1], [frame, frame + 1], interpolation_mode="CONSTANT")
+        self.set_keyframes("hide_render", [0, 1], [frame, frame + 1], interpolation_mode="CONSTANT")
 
     def delete(self):
         if self._parent:
@@ -196,4 +216,3 @@ class HighLevelObject(HighLevelBase):
             for collection in self.linked_collections:
                 collection.link(c)
         return c
-

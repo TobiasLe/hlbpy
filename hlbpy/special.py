@@ -6,6 +6,7 @@ from .external.tex import tex_to_svg_file
 from .external.tex import get_modified_expression
 from .directions import *
 from .empty import Empty
+from .material import PrincipledBSDF
 import tempfile
 import numpy as np
 from mathutils import Vector
@@ -46,6 +47,7 @@ class Tex(SVG):
 
         for child in self.bpy_object.children:
             child.scale = [scale] * 3
+        self.set_recursively("material", PrincipledBSDF(name=name+"Mat"))
         self.update()
         self.align_children(CENTER)
 
@@ -70,21 +72,33 @@ class MathTex(Tex):
             begin = end
         for subobject in subobjects:
             subobject.parent = self
+            subobject.set_recursively("material", PrincipledBSDF(name=subobject.name+"Mat"))
 
     def transform(self, target, start, stop=None, n_frames=30, hide=True, adjust_spline_number=True):
+        if stop is None:
+            stop = start + n_frames
+
         self.equalize_child_numbers(target)
 
         for own_child, target_child in zip(self.children, target.children):
-            for own_child_child, target_child_child in zip(own_child, target_child):
-                own_child_child.transform(target_child_child,
-                                          start=start,
-                                          stop=stop,
-                                          n_frames=n_frames,
-                                          hide=hide,
-                                          adjust_spline_number=adjust_spline_number)
+            if len(own_child) == 0:
+                target_child.material.alpha_blend(start, stop, 0, 1)
+            elif len(target_child) == 0:
+                own_child.material.alpha_blend(start, stop, 1, 0)
+            else:
+                for own_child_child, target_child_child in zip(own_child, target_child):
+                    own_child_child.transform(target_child_child,
+                                              start=start,
+                                              stop=stop,
+                                              n_frames=n_frames,
+                                              hide=hide,
+                                              adjust_spline_number=adjust_spline_number)
 
     def equalize_child_numbers(self, target):
         for own_child, target_child in zip(self.children, target.children):
+            if len(own_child) == 0 or len(target_child) == 0:
+                continue
+
             if len(own_child) > len(target_child):
                 to_extend = target_child
                 other = own_child

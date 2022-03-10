@@ -3,7 +3,6 @@ from .base import HighLevelBase
 from .misc import srgb_to_linearrgb
 
 
-
 class PrincipledBSDF(HighLevelBase):
     def __init__(self, name="PrincipledBSDF", srgb=(200, 200, 200)):
         self.bpy_object = bpy.data.materials.new(name)
@@ -29,3 +28,12 @@ class PrincipledBSDF(HighLevelBase):
         self.principled_BSDF_node.inputs["Alpha"].default_value = value
         if value != 1:
             self.bpy_object.blend_method = "BLEND"
+
+    def alpha_blend(self, start, stop, start_value, stop_value):
+        self.bpy_object.blend_method = "BLEND"
+        self.set_keyframes('node_tree.nodes["Principled BSDF"].inputs["Alpha"].default_value',
+                           [start_value, stop_value], [start, stop])
+
+
+
+
