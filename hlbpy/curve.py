@@ -15,7 +15,8 @@ class Text(HighLevelObject):
 
 
 class Curve(HighLevelObject):
-    def __init__(self, vertices=None, spline_type="POLY", name="Curve", bevel_object=None, bpy_object=None):
+    def __init__(self, vertices=None, spline_type="POLY", name="Curve", bevel_object=None, bpy_object=None,
+                 bezier_handle_type="AUTO"):
         """
 
         Args:
@@ -24,12 +25,25 @@ class Curve(HighLevelObject):
             name:
             bevel_object:
         """
+        vertices = np.array(vertices)
+        if vertices.ndim != 2 or vertices.shape[1] != 3:
+            raise ValueError("Three values (xyz) must be given for each vertex. "
+                             f"The shape should be: (number of vertices, 3) but is {vertices.shape}")
+
         if vertices is not None and bpy_object is None:
             curve = bpy.data.curves.new(name, type='CURVE')
             bpy_object = bpy.data.objects.new(name, curve)
             spline = curve.splines.new(type=spline_type)
             if spline_type == "BEZIER":
-                raise NotImplementedError
+                spline.bezier_points.add(len(vertices) - 1)
+                spline.bezier_points.foreach_set('co', vertices.flatten())
+                spline.bezier_points.foreach_set('handle_left', vertices.flatten())
+                spline.bezier_points.foreach_set('handle_right', vertices.flatten())
+                for point in spline.bezier_points:  # somehow foreach_set does not work
+                    point.handle_left_type = bezier_handle_type
+                    point.handle_right_type = bezier_handle_type
+
+
             else:
                 type_numbers = np.zeros((len(vertices), 1))
                 if spline_type == "NURBS":
@@ -56,6 +70,7 @@ class Curve(HighLevelObject):
         self.bpy_object.data.bevel_mode = "OBJECT"
         self.bpy_object.data.bevel_object = value.bpy_object
         self._bevel_object = value
+        self.shade_smooth = False
 
     @property
     def shade_smooth(self):
@@ -153,6 +168,16 @@ class Rectangle(Curve):
                              [+width / 2, +height / 2, 0],
                              [+width / 2, -height / 2, 0]])
         super().__init__(vertices, spline_type, name)
+        self.cyclic = True
+
+
+class Circle(Curve):
+    def __init__(self, radius=1, name="Circle"):
+        vertices = [[0, -radius, 0],
+                    [radius, 0, 0],
+                    [0, radius, 0],
+                    [-radius, 0, 0]]
+        super().__init__(vertices, spline_type="BEZIER", name=name)
         self.cyclic = True
 
 

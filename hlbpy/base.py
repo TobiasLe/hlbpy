@@ -44,7 +44,15 @@ class HighLevelBase:
         for view_layer in HighLevelBase.all_hlbpy_objects_scene.view_layers:
             view_layer.update()
 
-    def set_keyframes(self, attribute, values, frame_numbers=None, index=None, as_samples=False, interpolation_mode="LINEAR",
+    def set_up_animation_data(self):
+        if self.bpy_object.animation_data is None:
+            self.bpy_object.animation_data_create()
+        if self.bpy_object.animation_data.action is None:
+            action = bpy.data.actions.new(self.bpy_object.name + "_act")
+            self.bpy_object.animation_data.action = action
+
+    def set_keyframes(self, attribute, values, frame_numbers=None, index=None, as_samples=False,
+                      interpolation_mode="LINEAR",
                       bezier_handles_left=None, bezier_handles_right=None):
         """
         Set a whole array of keyframes at once.
@@ -65,16 +73,12 @@ class HighLevelBase:
 
         """
         assert isinstance(interpolation_mode, str)
-        interpolation_mode_number = {"CONSTANT": 0, "LINEAR": 1, "BEZIER":2}[interpolation_mode]
+        interpolation_mode_number = {"CONSTANT": 0, "LINEAR": 1, "BEZIER": 2}[interpolation_mode]
 
         values = np.array(values)
         if values.ndim == 1:
             values = np.expand_dims(values, axis=1)
-        if self.bpy_object.animation_data is None:
-            self.bpy_object.animation_data_create()
-        if self.bpy_object.animation_data.action is None:
-            action = bpy.data.actions.new(self.bpy_object.name + "_act")
-            self.bpy_object.animation_data.action = action
+        self.set_up_animation_data()
 
         n_frames = values.shape[0]
 
@@ -118,4 +122,14 @@ class HighLevelBase:
             if as_samples:
                 fcurve.convert_to_samples(0, n_frames)
 
-
+    def set_keyframe(self, attribute, value, frame_number, index=0, interpolation=None):
+        self.set_up_animation_data()
+        fcurve = self.bpy_object.animation_data.action.fcurves.find(attribute, index=index)
+        if not fcurve:
+            fcurve = self.bpy_object.animation_data.action.fcurves.new(attribute, index=index)
+        key_frame = fcurve.keyframe_points.insert(frame_number, value, options={"FAST"})
+        if interpolation:
+            key_frame.interpolation = interpolation
+        return key_frame
+        # Warning! key_frame is only valid until another keyframe has been created
+        # see https://developer.blender.org/T83044

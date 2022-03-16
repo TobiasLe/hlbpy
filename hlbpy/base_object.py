@@ -2,6 +2,7 @@ from .base import HighLevelBase
 from .directions import *
 from mathutils import Vector
 from .misc import apply_material_to_obj, get_bpy_obj
+from .transitions import Transitions
 import bpy
 
 
@@ -12,6 +13,7 @@ class HighLevelObject(HighLevelBase):
         self.linked_collections = []
         self._parent = None
         self._material = None
+        self.transitions = Transitions(self)
         HighLevelBase.all_hlbpy_objects_scene.collection.objects.link(self.bpy_object)
         if not no_update:
             self.update()
@@ -166,8 +168,9 @@ class HighLevelObject(HighLevelBase):
         return self
 
     def align_children(self, direction):
-        self.move_children(-self.get_children_bound(direction))
-        self.update()
+        if self.children:
+            self.move_children(-self.get_children_bound(direction))
+            self.update()
         return self
 
     def to_local(self, vector):
@@ -193,13 +196,19 @@ class HighLevelObject(HighLevelBase):
         """
         return np.array(self.bpy_object.matrix_world @ Vector(vector))
 
-    def hide_until(self, frame):
+    def hide_until(self, frame, recursively=True):
         self.set_keyframes("hide_viewport", [1, 0], [frame - 1, frame], interpolation_mode="CONSTANT")
         self.set_keyframes("hide_render", [1, 0], [frame - 1, frame], interpolation_mode="CONSTANT")
+        if recursively:
+            for child in self:
+                child.hide_until(frame)
 
-    def hide_from(self, frame):
+    def hide_from(self, frame, recursively=True):
         self.set_keyframes("hide_viewport", [0, 1], [frame, frame + 1], interpolation_mode="CONSTANT")
         self.set_keyframes("hide_render", [0, 1], [frame, frame + 1], interpolation_mode="CONSTANT")
+        if recursively:
+            for child in self:
+                child.hide_from(frame)
 
     def delete(self):
         if self._parent:
