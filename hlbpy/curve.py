@@ -25,12 +25,13 @@ class Curve(HighLevelObject):
             name:
             bevel_object:
         """
-        vertices = np.array(vertices)
-        if vertices.ndim != 2 or vertices.shape[1] != 3:
-            raise ValueError("Three values (xyz) must be given for each vertex. "
-                             f"The shape should be: (number of vertices, 3) but is {vertices.shape}")
 
         if vertices is not None and bpy_object is None:
+            vertices = np.array(vertices)
+            if vertices.ndim != 2 or vertices.shape[1] != 3:
+                raise ValueError("Three values (xyz) must be given for each vertex. "
+                                 f"The shape should be: (number of vertices, 3) but is {vertices.shape}")
+
             curve = bpy.data.curves.new(name, type='CURVE')
             bpy_object = bpy.data.objects.new(name, curve)
             spline = curve.splines.new(type=spline_type)

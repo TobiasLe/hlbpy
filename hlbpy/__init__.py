@@ -17,6 +17,7 @@ if inside_blender:
     from . import curve
     from . import mesh
     from . import special
+    from . import plotting
     from .special import ParentGroup
     from . import material
     from .empty import *
