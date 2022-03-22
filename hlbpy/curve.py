@@ -2,7 +2,6 @@ import bpy
 import numpy as np
 from math import pi
 from .external.curve_assign_shapekey import main as curve_transform
-
 from .base_object import HighLevelObject
 
 

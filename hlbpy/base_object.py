@@ -4,6 +4,7 @@ from mathutils import Vector
 from .misc import apply_material_to_obj, get_bpy_obj
 from .transitions import Transitions
 import bpy
+from mathutils import Matrix, Vector
 
 
 class HighLevelObject(HighLevelBase):
@@ -225,6 +226,11 @@ class HighLevelObject(HighLevelBase):
             for collection in self.linked_collections:
                 collection.link(c)
         return c
+
+    def origin_to(self, location):
+        self.bpy_object.data.transform(Matrix.Translation(-location))
+        matrix_world = self.bpy_object.matrix_world
+        matrix_world.translation = matrix_world @ Vector(location)
 
 
 
