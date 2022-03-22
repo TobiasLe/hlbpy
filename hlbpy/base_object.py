@@ -30,8 +30,7 @@ class HighLevelObject(HighLevelBase):
 
     @property
     def center(self):
-        return (np.array(self.bpy_object.bound_box[6]) + np.array(self.bpy_object.bound_box[0])) * \
-               self.bpy_object.scale / 2
+        return self.get_bound((0, 0, 0))
 
     @property
     def left(self):
@@ -127,7 +126,8 @@ class HighLevelObject(HighLevelBase):
         return self.get_own_bound(direction)
 
     def get_own_bound(self, direction, in_global_space=False):
-        center = self.center
+        center = (np.array(self.bpy_object.bound_box[6]) + np.array(self.bpy_object.bound_box[0])) * \
+                 self.bpy_object.scale / 2
         result = Vector((0, 0, 0))
         for i, d in enumerate(direction):
             if d == 0:
@@ -137,7 +137,7 @@ class HighLevelObject(HighLevelBase):
             else:
                 result[i] = self.bpy_object.bound_box[0][i]
         if in_global_space:
-            return np.array(self.bpy_object.matrix_global @ result)
+            return np.array(self.bpy_object.matrix_world @ result)
         else:
             return np.array(self.bpy_object.matrix_local @ result)
 
@@ -231,6 +231,4 @@ class HighLevelObject(HighLevelBase):
         self.bpy_object.data.transform(Matrix.Translation(-location))
         matrix_world = self.bpy_object.matrix_world
         matrix_world.translation = matrix_world @ Vector(location)
-
-
-
+        self.update()
