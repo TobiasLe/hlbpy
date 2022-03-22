@@ -25,14 +25,14 @@ class Figure(Empty):
             axis.parent = self
             self.axes.append(axis)
 
-    def line_plot(self, data, colors=None, bevel=None):
+    def line_plot(self, data, colors=None, bevel=None, spline_type="POLY", bezier_handle_type="AUTO"):
         data = np.array(data)
 
         if data.shape[1] == 2:
             data = np.concatenate((data, np.zeros((data.shape[0], 1))), axis=1)
 
         self.extent = self.default_extent(data)
-        line = Curve(self.transform_to_extent(data))
+        line = Curve(self.transform_to_extent(data), spline_type=spline_type, bezier_handle_type=bezier_handle_type)
 
         line.bevel_object = bevel or Rectangle(self.default_line_width, self.default_line_width)
         line.parent = self

@@ -132,7 +132,7 @@ class MathTex(Tex):
         if stop is None:
             stop = start + n_frames
         if blend_offset is None:
-            blend_offset = int((stop - start) * 2/3)
+            blend_offset = int((stop - start) * 2 / 3)
 
         if target_indices is None:
             if len(self) != len(target):

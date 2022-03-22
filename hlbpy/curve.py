@@ -98,6 +98,14 @@ class Curve(HighLevelObject):
     def cyclic(self, value):
         self.bpy_object.data.splines[0].use_cyclic_u = value
 
+    @property
+    def extrude(self):
+        return self.bpy_object.data.extrude
+
+    @extrude.setter
+    def extrude(self, value):
+        self.bpy_object.data.extrude = value
+
     def transform(self, target, start, stop=None, n_frames=30, hide=True, adjust_spline_number=True):
         if stop is None:
             stop = start + n_frames
@@ -143,6 +151,12 @@ class Curve(HighLevelObject):
         if hide:
             self.hide_from(stop)
             target.hide_until(stop)
+
+
+class Line(Curve):
+    def __init__(self, start, stop, name="Line"):
+        vertices = np.stack((start, stop), axis=0)
+        super().__init__(vertices, name=name)
 
 
 class Polygon(Curve):

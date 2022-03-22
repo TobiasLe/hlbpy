@@ -93,13 +93,14 @@ class Axis(Empty):
     def set_latex_label(self, text, offset=None):
         if offset is None:
             offset = self.width * 25
-        label = Tex(text, name="label_dim{}".format(self.dim))
-        label.parent = self
-        label.scale *= self.width * 15
+        self.label = Tex(text, name="self.label_dim{}".format(self.dim))
+        self.label.parent = self
+        self.label.scale *= self.width * 15
         if self.dim == 0:
-            label.location = [self.length / 2, -offset, 0]
+            self.label.location = [self.length / 2, -offset, 0]
         elif self.dim == 1:
-            label.location = [-offset, self.length / 2, 0]
-            label.rotation_euler[2] = pi / 2
+            self.label.location = [-offset, self.length / 2, 0]
+            self.label.rotation_euler[2] = pi / 2
         elif self.dim == 2:
-            label.location = [-offset, 0, self.length / 2]
+            self.label.location = [-offset, 0, self.length / 2]
+        return self.label
