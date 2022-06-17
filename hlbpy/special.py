@@ -107,24 +107,35 @@ class Tex(SVG):
             child.parent = to_extend
 
 
-class MathTex(Tex):
+class MathTex(ParentGroup):
     def __init__(self, *tex_strings, name=None, scale=1000):
-        super().__init__("".join(tex_strings), name=name, environment="align*", scale=scale)
+        full_tex = Tex("".join(tex_strings), name=name, environment="align*", scale=scale)
+        if len(tex_strings) == 1:
+            subobjects = [full_tex]
+        else:
+            begin = 0
+            subobjects = []
+            for tex_string in tex_strings:
+                subobject = Tex(tex_string, environment="align*", scale=scale)
 
-        begin = 0
-        subobjects = []
-        for tex_string in tex_strings:
-            subobject = Tex(tex_string, environment="align*", scale=scale)
+                end = begin + len(subobject)
+                for obj in list(subobject.children):
+                    obj.delete()
+                for i in range(begin, end):
+                    full_tex.children[0].parent = subobject
+                subobjects.append(subobject)
+                begin = end
+            full_tex.delete()
 
-            end = begin + len(subobject)
-            for obj in list(subobject.children):
-                obj.delete()
-            for i in range(begin, end):
-                self.children[0].parent = subobject
-            subobjects.append(subobject)
-            begin = end
+        if name is None:
+            if tex_strings[0]:
+                name = tex_strings[0][:10] if len(tex_strings[0]) > 10 else tex_strings[0]
+            else:
+                name = "EmptyTex"
+
+        super().__init__(subobjects, name=name)
+
         for subobject in subobjects:
-            subobject.parent = self
             subobject.set_recursively("material", PrincipledBSDF(name=subobject.name + "Mat"))
 
     def transform(self, target, start, stop=None, n_frames=30, target_indices=None, adjust_spline_number=True,

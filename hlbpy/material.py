@@ -34,6 +34,12 @@ class PrincipledBSDF(HighLevelBase):
         self.set_keyframes('node_tree.nodes["Principled BSDF"].inputs["Alpha"].default_value',
                            [start_value, stop_value], [start, stop])
 
+    @property
+    def roughness(self):
+        self.principled_BSDF_node.inputs["Roughness"].default_value
 
+    @roughness.setter
+    def roughness(self, value):
+        self.principled_BSDF_node.inputs["Roughness"].default_value = value
 
 
