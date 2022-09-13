@@ -152,3 +152,12 @@ tex2.transform(tex3, start=50, n_frames=30)
 hlbpy.view.set_view([0, 0, 0], orthographic=True)
 ```
 <img src="images/formula_morphing.gif"/>
+
+## Installation
+(to be added)
+
+## License
+This code is under the [GPL3 License](LICENSE). 
+An exception is the code in the "external" and the "io_curve_svg" directories. I have not written this code myself. 
+You can find information about the authors and the License for those files at the top of each file. 
+Some of it is from Grant Sanderson's great [Manim library](https://github.com/3b1b/manim) which in general has been an inspiration for a lot of the stuff in this library.
