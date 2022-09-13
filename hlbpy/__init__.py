@@ -15,6 +15,7 @@ if inside_blender:
     from . import view
     from . import materials
     from . import curve
+    from .curve import Text
     from . import mesh
     from . import special
     from . import plotting
@@ -25,3 +26,4 @@ if inside_blender:
     from .scene import *
     from .external import tex
     from .directions import *
+
