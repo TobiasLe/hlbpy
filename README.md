@@ -9,7 +9,7 @@ Anyway, you are welcome to use the code! Just be aware that it is far from compl
 
 ## Usage
 
-Here is some code examples to give you an idea how you can use hlbpy.
+Here are some code examples to give you an idea how you can use hlbpy.
 
 ### Basic Scene
 
