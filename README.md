@@ -1,8 +1,8 @@
 # hlbpy
 
-hlbpy (high level blender python) is a library intended to make it more convenient to set up scenes in Blender with python. 
+hlbpy (high-level blender python) is a library intended to make it more convenient to set up scenes in Blender with python. 
 
-If you have ever used the blender python api, you have probably noticed that it is not really designed to quickly build scenes with it. Even doing simple stuff (e.g. adding a cube to the scene) can easily require several lines of code. hlbpy essentially adds a high level layer above the blender python api to make typical scene building tasks easier. 
+If you have ever used the blender python api, you have probably noticed that it is not really designed to quickly build scenes with it. Even doing simple stuff (e.g. adding a cube to the scene) can easily require several lines of code. hlbpy essentially adds a high-level layer above the blender python api to make typical scene building tasks easier. 
 
 I mainly write this library for my myself, to make it easier to create videos for my YouTube channel: [youtube.com/c/marblescience](https://www.youtube.com/c/marblescience)
 Anyway, you are welcome to use the code! Just be aware that it is far from complete, far from well tested, and far from well documented.
