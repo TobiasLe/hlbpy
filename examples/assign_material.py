@@ -3,11 +3,18 @@ import hlbpy
 hlbpy.run_in_blender()
 
 scene = hlbpy.Scene.from_context()
-collection = scene.link(hlbpy.Collection("TestCollection"))
+environment = scene.link(hlbpy.Collection("Environment"))
+marbles = scene.link(hlbpy.Collection("Marbles"))
 
-cube = collection.link(hlbpy.mesh.Cube())
+ground = environment.link(hlbpy.mesh.Cuboid((6, 3, 0.2)))
+ground.location = (2, 0, -0.1)
 
-red = hlbpy.material.PrincipledBSDF(name="Red", srgb=(200, 0, 0))
-red.alpha_blend(20, 50, 1, 0)
+for i in range(5):
+    marble = marbles.link(hlbpy.mesh.UVSphere(radius=0.4))
+    marble.shade_smooth()
+    marble.location = (i, 0, 0.4)
 
-cube.material = red
+    red_material = hlbpy.material.PrincipledBSDF(name="Red", srgb=(200, 0, 0))
+    red_material.roughness = 1 - i / 4
+    marble.material = red_material
+

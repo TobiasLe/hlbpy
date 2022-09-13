@@ -9,11 +9,8 @@ except ModuleNotFoundError:
 from .startup import *
 
 if inside_blender:
-    from . import add
-    from . import rigid_body
     from . import misc
     from . import view
-    from . import materials
     from . import curve
     from .curve import Text
     from . import mesh
