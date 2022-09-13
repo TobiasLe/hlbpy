@@ -93,7 +93,7 @@ class Axis(Empty):
     def set_latex_label(self, text, offset=None):
         if offset is None:
             offset = self.width * 25
-        self.label = Tex(text, name="self.label_dim{}".format(self.dim))
+        self.label = Tex(text, name="label_dim{}".format(self.dim))
         self.label.parent = self
         self.label.scale *= self.width * 15
         if self.dim == 0:

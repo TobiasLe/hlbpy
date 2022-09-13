@@ -4,7 +4,7 @@ import numpy as np
 hlbpy.run_in_blender()
 
 scene = hlbpy.Scene.from_context()
-collection = scene.link(hlbpy.Collection("TestCollection"))
+collection = scene.link(hlbpy.Collection("ExampleCollection"))
 
 x_values = np.linspace(0, np.pi * 2, 100)
 y_values = np.sin(x_values)
