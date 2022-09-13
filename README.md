@@ -40,6 +40,6 @@ We change the location of one cube.
 We parent one cube to the other.  
 Finally, we add keframes to animate the cubes.  
 
-Once exected, this code opens blender, and this is what you would see:
+Once executed, this code opens blender, and this is what you would see:
 
 <img src="images/basic_scene.gif"/>
