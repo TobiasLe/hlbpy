@@ -38,7 +38,7 @@ In this example, we create a new collection "Cubes".
 We link two cubes to this collection.  
 We change the location of one cube.  
 We parent one cube to the other.  
-Finally, we add keframes to animate the cubes.  
+Finally, we add keyframes to animate the cubes.  
 
 Once executed, this code opens blender, and this is what you would see:
 
